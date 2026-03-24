@@ -6,10 +6,10 @@ C="\e[1;36m"; G="\e[1;32m"; W="\e[1;37m"; R="\e[0m"; Y="\e[1;33m"
 
 clear
 echo -e "${C}─────────────────────────────────────${R}"
-echo -e "${G}     INSTALASI INDOS NATIVE (V2.1)${R}"
+echo -e "${G}     INSTALASI INDOS NATIVE (V2.2)${R}"
 echo -e "${C}─────────────────────────────────────${R}"
 
-# Fungsi Instalasi Inti (Native PRoot + SDCard)
+# Fungsi Instalasi Inti (Native PRoot + Fix Path + SDCard)
 install_indos() {
     echo -e "\n${Y}[*] Memeriksa paket PRoot dasar...${R}"
     pkg install proot -y > /dev/null 2>&1
@@ -20,16 +20,27 @@ install_indos() {
     echo -e "${Y}[*] Membangun file sistem INDOS...${R}"
     TARGET="$HOME/.indos-rootfs"
     
-    # Bersihkan sistem lama dan buat baru
+    # Bersihkan sistem lama dan buat struktur folder wajib
     rm -rf $TARGET
-    mkdir -p $TARGET/sdcard
+    mkdir -p $TARGET/bin $TARGET/etc $TARGET/root $TARGET/tmp $TARGET/sdcard
     
-    # Copy seluruh isi folder rootfs ke folder instalasi
-    cp -r rootfs/* $TARGET/
+    # Copy isi folder rootfs (jika ada file dari kamu)
+    if [ -d "rootfs" ]; then
+        cp -r rootfs/* $TARGET/
+    fi
     
-    # Wajib untuk Android 15: Beri izin eksekusi biner utama
+    # --- PERBAIKAN VITAL UNTUK NATIVE PROOT ---
+    # 1. Pastikan busybox bisa dieksekusi
     chmod +x $TARGET/bin/busybox
     
+    # 2. Fix error '/bin/sh' not found dengan membuat symlink ke busybox
+    ln -sf busybox $TARGET/bin/sh
+    
+    # 3. Fix error '/etc/passwd' agar dikenali sebagai root
+    echo "root:x:0:0:root:/root:/bin/sh" > $TARGET/etc/passwd
+    echo "root:x:0:" > $TARGET/etc/group
+    # ------------------------------------------
+
     # Membuat shortcut 'indos' dengan eksekusi PRoot mentah & Mount SDCard
     echo -e "${Y}[*] Merakit Kernel Peluncur...${R}"
     cat << 'INNER_EOF' > $PREFIX/bin/indos
@@ -38,7 +49,7 @@ clear
 # Hapus variabel Termux agar tidak bentrok
 unset LD_PRELOAD
 
-# Menjalankan mesin PRoot murni dengan binding ke SDCard
+# Menjalankan mesin PRoot murni dengan binding lengkap
 proot --link2symlink \
       -0 \
       -r $HOME/.indos-rootfs \
@@ -67,8 +78,8 @@ if [ "$choice" == "1" ]; then
     clear
     echo -e "${G}─── TUTORIAL INDOS ───${R}"
     echo -e "${W}1. Ketik ${G}'indos'${W} untuk masuk ke OS."
-    echo -e "2. Kamu bisa akses file HP di folder ${C}/sdcard${W}."
-    echo -e "3. Gunakan perintah Linux dasar (ls, cd, mkdir, dll)."
+    echo -e "2. File HP kamu ada di folder ${C}/sdcard${W}."
+    echo -e "3. Sistem sudah mendukung path native (No Distro-Tool)."
     echo -e "4. Ketik ${R}'exit'${W} untuk keluar dari INDOS."
     echo -e "${C}──────────────────────${R}"
     sleep 5
