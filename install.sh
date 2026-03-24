@@ -6,26 +6,31 @@ C="\e[1;36m"; G="\e[1;32m"; W="\e[1;37m"; R="\e[0m"; Y="\e[1;33m"
 
 clear
 echo -e "${C}─────────────────────────────────────${R}"
-echo -e "${G}     INSTALASI INDOS NATIVE (V2.0)${R}"
+echo -e "${G}     INSTALASI INDOS NATIVE (V2.1)${R}"
 echo -e "${C}─────────────────────────────────────${R}"
 
-# Fungsi Instalasi Inti (Native PRoot)
+# Fungsi Instalasi Inti (Native PRoot + SDCard)
 install_indos() {
     echo -e "\n${Y}[*] Memeriksa paket PRoot dasar...${R}"
     pkg install proot -y > /dev/null 2>&1
+    
+    # Meminta izin akses penyimpanan HP
+    termux-setup-storage
 
     echo -e "${Y}[*] Membangun file sistem INDOS...${R}"
     TARGET="$HOME/.indos-rootfs"
     
     # Bersihkan sistem lama dan buat baru
     rm -rf $TARGET
-    mkdir -p $TARGET
+    mkdir -p $TARGET/sdcard
+    
+    # Copy seluruh isi folder rootfs ke folder instalasi
     cp -r rootfs/* $TARGET/
     
     # Wajib untuk Android 15: Beri izin eksekusi biner utama
     chmod +x $TARGET/bin/busybox
     
-    # Membuat shortcut 'indos' dengan eksekusi PRoot mentah
+    # Membuat shortcut 'indos' dengan eksekusi PRoot mentah & Mount SDCard
     echo -e "${Y}[*] Merakit Kernel Peluncur...${R}"
     cat << 'INNER_EOF' > $PREFIX/bin/indos
 #!/bin/bash
@@ -33,13 +38,14 @@ clear
 # Hapus variabel Termux agar tidak bentrok
 unset LD_PRELOAD
 
-# Menjalankan mesin PRoot murni
+# Menjalankan mesin PRoot murni dengan binding ke SDCard
 proot --link2symlink \
       -0 \
       -r $HOME/.indos-rootfs \
       -b /dev \
       -b /proc \
       -b /sys \
+      -b /sdcard \
       -w / \
       /bin/sh
 INNER_EOF
@@ -61,10 +67,11 @@ if [ "$choice" == "1" ]; then
     clear
     echo -e "${G}─── TUTORIAL INDOS ───${R}"
     echo -e "${W}1. Ketik ${G}'indos'${W} untuk masuk ke OS."
-    echo -e "2. Di dalam INDOS, kamu bisa menggunakan perintah Linux dasar."
-    echo -e "3. Ketik ${R}'exit'${W} untuk keluar dari INDOS."
+    echo -e "2. Kamu bisa akses file HP di folder ${C}/sdcard${W}."
+    echo -e "3. Gunakan perintah Linux dasar (ls, cd, mkdir, dll)."
+    echo -e "4. Ketik ${R}'exit'${W} untuk keluar dari INDOS."
     echo -e "${C}──────────────────────${R}"
-    sleep 3
+    sleep 5
 elif [ "$choice" == "2" ]; then
     echo -e "\n${Y}Oke, langsung gas instalasi!${R}"
 else
