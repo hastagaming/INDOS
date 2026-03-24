@@ -24,6 +24,11 @@ Pastikan kamu sudah menginstal `proot-distro` dan `git` di Termux sebelum memula
 ```bash
 pkg install proot-distro git -y
 ```
+---
+
+### 🌐 Dokumentasi Resmi
+Lihat panduan lengkap dan fitur INDOS di sini:
+👉 **[hastagaming.github.io/INDOS](https://hastagaming.github.io/INDOS/)**
 
 ---
 
