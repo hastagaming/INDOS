@@ -23,6 +23,7 @@ Pastikan kamu sudah menginstal `proot-distro` dan `git` di Termux sebelum memula
 
 ```bash
 pkg install proot-distro git -y
+```
 
 ---
 
@@ -30,4 +31,4 @@ pkg install proot-distro git -y
 Jalankan satu baris perintah ini di Termux:
 
 ```bash
-git clone [https://github.com/USERNAME_KAMU/INDOS](https://github.com/USERNAME_KAMU/INDOS) && cd INDOS && ./install.sh
+git clone [https://github.com/hastagaming/INDOS](https://github.com/hastagaming/INDOS) && cd INDOS && ./install.sh
