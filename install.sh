@@ -5,18 +5,17 @@ C="\e[1;36m"; G="\e[1;32m"; W="\e[1;37m"; R="\e[0m"; Y="\e[1;33m"
 
 clear
 echo -e "${C}─────────────────────────────────────${R}"
-echo -e "${G}     INSTALASI INDOS NATIVE (V2.7)${R}"
+echo -e "${G}     INSTALASI INDOS NATIVE (V2.8)${R}"
 echo -e "${C}─────────────────────────────────────${R}"
 
-# Fungsi Sinkronisasi GitHub (Hanya untuk Pemilik Repo)
+# Fungsi Sinkronisasi GitHub (Hanya untuk Pemilik: hastagaming)
 git_sync() {
-    # Cek apakah ini folder git dan apakah remotenya adalah hastagaming
     if [ -d ".git" ]; then
         REMOTE_URL=$(git config --get remote.origin.url)
         if [[ "$REMOTE_URL" == *"hastagaming"* ]]; then
             echo -e "\n${Y}[*] Mendeteksi Pemilik: Sinkronisasi GitHub...${R}"
             git add .
-            git commit -m "Fix Android 15 compatibility & Permission: $(date +'%Y-%m-%d %H:%M')" 2>/dev/null
+            git commit -m "Ultra Fix Android 15 Compatibility: $(date +'%Y-%m-%d %H:%M')" 2>/dev/null
             
             echo -e "${C}[>] Rebase & Push...${R}"
             if ! git pull --rebase origin main; then
@@ -34,7 +33,7 @@ git_sync() {
 }
 
 install_indos() {
-    echo -e "\n${Y}[*] Memasang biner PRoot...${R}"
+    echo -e "\n${Y}[*] Memasang biner PRoot terbaru...${R}"
     pkg install proot -y > /dev/null 2>&1
     
     # Cek Storage
@@ -44,7 +43,7 @@ install_indos() {
         sleep 2
     fi
 
-    # Lokasi TARGET (Gunakan folder standar, bukan folder titik demi Android 15)
+    # Lokasi TARGET (Folder biasa, bukan hidden demi kestabilan Android 15)
     TARGET="$HOME/indos-rootfs"
     
     echo -e "${Y}[*] Membangun sistem INDOS di $TARGET...${R}"
@@ -56,7 +55,7 @@ install_indos() {
     fi
     
     # --- FIX ANDROID 15 EXECUTION ERROR ---
-    # Gunakan Hard Copy Busybox ke SH, jangan pakai Symlink (ln -s) karena sering diblokir
+    # Hard Copy Busybox ke SH (Penting!)
     cp $TARGET/bin/busybox $TARGET/bin/sh
     chmod 755 $TARGET/bin/busybox
     chmod 755 $TARGET/bin/sh
@@ -66,16 +65,18 @@ install_indos() {
     echo "root:x:0:" > $TARGET/etc/group
     # --------------------------------------
 
-    echo -e "${Y}[*] Merakit Kernel Peluncur...${R}"
+    echo -e "${Y}[*] Merakit Kernel Peluncur Anti-Blokir...${R}"
     cat << 'INNER_EOF' > $PREFIX/bin/indos
 #!/bin/bash
 clear
 # Hapus variabel yang mengganggu Android 15
 unset LD_PRELOAD
-# Jangan hapus file temp secara agresif agar tidak error Function Not Implemented
-export PROOT_SKIP_CLEANUP=1
 
-# Jalankan mesin PRoot dengan mode kompatibilitas
+# FLAG KRUSIAL UNTUK ANDROID 15
+export PROOT_SKIP_CLEANUP=1
+export PROOT_NO_SECCOMP=1
+
+# Jalankan mesin PRoot dengan mode Ultra-Compatibility
 proot --link2symlink \
       -0 \
       -r $HOME/indos-rootfs \
@@ -83,6 +84,7 @@ proot --link2symlink \
       -b /proc \
       -b /sys \
       -b /sdcard \
+      -b $HOME \
       -w / \
       /bin/sh
 INNER_EOF
@@ -90,7 +92,7 @@ INNER_EOF
     chmod +x $PREFIX/bin/indos
     echo -e "${G}[+] INDOS NATIVE BERHASIL TERPASANG!${R}"
     
-    # Jalankan Sinkronisasi (Otomatis deteksi siapa yang pakai)
+    # Jalankan Sinkronisasi GitHub
     git_sync
 }
 
@@ -106,7 +108,7 @@ if [ "$choice" == "1" ]; then
     echo -e "${G}─── TUTORIAL INDOS ───${R}"
     echo -e "${W}1. Ketik ${G}'indos'${W} untuk masuk ke OS."
     echo -e "2. Akses HP ada di folder ${C}/sdcard${W}."
-    echo -e "3. Fitur Auto-Git hanya aktif untuk ${G}hastagaming${W}."
+    echo -e "3. Mode ${G}PROOT_NO_SECCOMP${W} aktif (Android 15 Fix)."
     echo -e "4. Ketik ${R}'exit'${W} untuk keluar."
     echo -e "${C}──────────────────────${R}"
     sleep 5
