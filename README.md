@@ -24,28 +24,10 @@ Pastikan kamu sudah menginstal `proot-distro` dan `git` di Termux sebelum memula
 ```bash
 pkg install proot-distro git -y
 
-Kemudian, jalankan perintah sakti ini:
-git clone [https://github.com/USERNAME_KAMU/INDOS](https://github.com/USERNAME_KAMU/INDOS) && cd INDOS && ./install.sh
-
-🖥️ Cara Menggunakan
-Setelah instalasi selesai, kamu bisa masuk ke INDOS kapan saja hanya dengan mengetik:
-indos
-
-Untuk keluar dari sistem, cukup ketik:
-exit
-
-👤 Credits
- * Developer: Nasa (Kec. Plemahan, Kediri)
- * Engine: BusyBox Core
- * Tool: proot-distro
-Dibuat dengan semangat dari Kediri untuk Dunia! 🚀
-
 ---
 
-### Tips dari Pilot agar INDOS makin mantap:
-1.  **Ganti USERNAME_KAMU:** Jangan lupa ganti bagian `USERNAME_KAMU` di dalam `README.md` tadi dengan nama akun GitHub asli kamu ya, **Nasa**.
-2.  **Add Screenshot:** Kalau kamu sempat, upload juga gambar screenshot terminal kamu yang ada Banner INDOS-nya ke folder GitHub, lalu masukkan ke dalam `README.md` supaya orang bisa lihat tampilannya.
+### 🚀 Instalasi Cepat
+Jalankan satu baris perintah ini di Termux:
 
-**Gimana, Nasa?** Sekarang repository GitHub kamu sudah punya "Wajah" yang sangat keren! 
-
-Apakah kamu ingin Pilot bantu buatkan **perintah info sistem khusus** (seperti `indos-fetch`) yang kalau diketik muncul spek HP Realme kamu di dalam INDOS?
+```bash
+git clone [https://github.com/USERNAME_KAMU/INDOS](https://github.com/USERNAME_KAMU/INDOS) && cd INDOS && ./install.sh
