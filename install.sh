@@ -1,35 +1,53 @@
 cat << 'EOF' > ~/INDOS/install.sh
 #!/bin/bash
 
-# Warna Neon
+# Warna Neon INDOS
 C="\e[1;36m"; G="\e[1;32m"; W="\e[1;37m"; R="\e[0m"; Y="\e[1;33m"
 
 clear
 echo -e "${C}─────────────────────────────────────${R}"
-echo -e "${G}     INSTALASI INDOS (V1.0)${R}"
+echo -e "${G}     INSTALASI INDOS NATIVE (V2.0)${R}"
 echo -e "${C}─────────────────────────────────────${R}"
 
-# Fungsi Instalasi Inti
+# Fungsi Instalasi Inti (Native PRoot)
 install_indos() {
-    echo -e "\n${Y}[*] Memasang file sistem INDOS...${R}"
-    TARGET="$PREFIX/var/lib/proot-distro/installed-rootfs/indos"
-    CONFIG="$PREFIX/etc/proot-distro/indos.sh"
+    echo -e "\n${Y}[*] Memeriksa paket PRoot dasar...${R}"
+    pkg install proot -y > /dev/null 2>&1
 
-    rm -rf $TARGET
-    mkdir -p $TARGET/bin $TARGET/etc
-    cp -r rootfs/* $TARGET/
-    chmod +x $TARGET/bin/busybox
-    echo 'DISTRO_NAME="INDOS"' > $CONFIG
+    echo -e "${Y}[*] Membangun file sistem INDOS...${R}"
+    TARGET="$HOME/.indos-rootfs"
     
-    # Membuat shortcut 'indos' di Termux luar
+    # Bersihkan sistem lama dan buat baru
+    rm -rf $TARGET
+    mkdir -p $TARGET
+    cp -r rootfs/* $TARGET/
+    
+    # Wajib untuk Android 15: Beri izin eksekusi biner utama
+    chmod +x $TARGET/bin/busybox
+    
+    # Membuat shortcut 'indos' dengan eksekusi PRoot mentah
+    echo -e "${Y}[*] Merakit Kernel Peluncur...${R}"
     cat << 'INNER_EOF' > $PREFIX/bin/indos
 #!/bin/bash
 clear
-proot-distro login indos
+# Hapus variabel Termux agar tidak bentrok
+unset LD_PRELOAD
+
+# Menjalankan mesin PRoot murni
+proot --link2symlink \
+      -0 \
+      -r $HOME/.indos-rootfs \
+      -b /dev \
+      -b /proc \
+      -b /sys \
+      -w / \
+      /bin/sh
 INNER_EOF
+    
+    # Berikan izin eksekusi pada peluncur
     chmod +x $PREFIX/bin/indos
 
-    echo -e "${G}[+] INDOS BERHASIL TERPASANG!${R}"
+    echo -e "${G}[+] INDOS NATIVE BERHASIL TERPASANG!${R}"
 }
 
 # Menu Interaktif: Apakah kamu mau tutorial?
@@ -61,4 +79,5 @@ echo -e "${W}Ketik ${G}\"indos\"${W} untuk memulai distronya${R}"
 echo -e "${C}─────────────────────────────────────${R}"
 EOF
 
+# Beri izin eksekusi ke script utama
 chmod +x ~/INDOS/install.sh
