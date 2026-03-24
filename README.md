@@ -32,3 +32,14 @@ Jalankan satu baris perintah ini di Termux:
 
 ```bash
 git clone [https://github.com/hastagaming/INDOS](https://github.com/hastagaming/INDOS) && cd INDOS && ./install.sh
+```
+---
+
+### 📥 Virtual Machine Support (Beta)
+INDOS kini dapat dijalankan di emulator seperti **Limbo**, **Vectras VM**, atau **QEMU** (Terminal Only).
+
+**Unduh Image:**
+- [Download INDOS ISO](https://github.com/hastagaming/INDOS/raw/main/indos-minimal.iso)
+- [Download INDOS QCOW2](https://github.com/hastagaming/INDOS/raw/main/indos-disk.qcow2)
+
+---
